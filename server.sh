@@ -23,11 +23,11 @@ create_response() {
     local file_size="0"
     local preview=""
     
-    if [ -f "$file_path" ]; then
-        file_exists="true"
-        file_size=$(stat -c%s "$file_path" 2>/dev/null || stat -f%z "$file_path" 2>/dev/null || echo "0")
-        preview=$(head -10 "$file_path" 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "Could not read file")
-    fi
+
+    file_exists="true"
+    file_size=$(stat -c%s "$file_path" 2>/dev/null || stat -f%z "$file_path" 2>/dev/null || echo "0")
+    preview=$(head -10 "$file_path" 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "Could not read file")
+    
     
     # Get R analysis results if available
     local r_analysis=""
