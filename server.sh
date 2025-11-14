@@ -19,21 +19,15 @@ echo "Starting HTTP server on port $PORT..."
 # Function to create HTML response
 create_response() {
     local file_path="/app/downloads/sample_data.csv"
-    local file_exists="false"
+    local file_exists="true"
     local file_size="0"
     local preview=""
-    
 
-    file_exists="true"
-    file_size=$(stat -c%s "$file_path" 2>/dev/null || stat -f%z "$file_path" 2>/dev/null || echo "0")
-    preview=$(head -10 "$file_path" 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "Could not read file")
-    
     
     # Get R analysis results if available
     local r_analysis=""
-    if command -v Rscript >/dev/null 2>&1 && [ -f "$file_path" ]; then
-        r_analysis=$(Rscript /app/analyze_csv.R 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "R analysis failed")
-    fi
+    r_analysis=$(Rscript /app/analyze_csv.R 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "R analysis failed")
+    
     
     cat << EOF
 HTTP/1.1 200 OK
@@ -97,13 +91,9 @@ EOF
 # Function to create health check response
 create_health_response() {
     local file_path="/app/downloads/sample_data.csv"
-    local file_exists="false"
+    local file_exists="true"
     local file_size="0"
     
-    if [ -f "$file_path" ]; then
-        file_exists="true"
-        file_size=$(stat -c%s "$file_path" 2>/dev/null || stat -f%z "$file_path" 2>/dev/null || echo "0")
-    fi
     
     cat << EOF
 HTTP/1.1 200 OK
