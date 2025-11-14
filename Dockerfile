@@ -13,15 +13,9 @@ RUN mkdir -p /app/downloads
 # Copy the scripts
 COPY download_file.sh /app/download_file.sh
 COPY server.sh /app/server.sh
-COPY analyze_csv.R /app/analyze_csv.R
-COPY run_r_analysis.sh /app/run_r_analysis.sh
-COPY handle_request.sh /app/handle_request.sh
-COPY create_main_response.sh /app/create_main_response.sh
-COPY create_health_response.sh /app/create_health_response.sh
 
 # Make the scripts executable
-RUN chmod +x /app/download_file.sh /app/server.sh /app/analyze_csv.R /app/run_r_analysis.sh \
-    /app/handle_request.sh /app/create_main_response.sh /app/create_health_response.sh
+RUN chmod +x /app/download_file.sh /app/server.sh
 
 # Set the working directory
 WORKDIR /app
