@@ -2,7 +2,10 @@
 FROM alpine:latest
 
 # Install curl, bash, netcat, and R
-RUN apk add --no-cache curl bash netcat-openbsd ca-certificates R
+RUN apk add --no-cache curl bash netcat-openbsd ca-certificates R R-dev
+
+# Install data.table package
+RUN Rscript -e "install.packages('data.table', repos='https://cloud.r-project.org/')"
 
 # Create a directory for downloaded files
 RUN mkdir -p /app/downloads
