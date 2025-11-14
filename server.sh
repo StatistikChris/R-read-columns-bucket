@@ -22,13 +22,20 @@ while true; do
         done
         
         # Get column names and return them
-
-        column_names=$(Rscript -e "
-            library(data.table)
-            data <- fread('/app/downloads/sample_data.csv', nrows = 0, header = TRUE)
-            cat(paste(names(data), collapse = ', '))
-        " 2>/dev/null)
+        if [ -f "/app/downloads/sample_data.csv" ] && command -v Rscript >/dev/null 2>&1; then
+            column_names=$(Rscript -e "
+                library(data.table)
+                data <- fread('/app/downloads/sample_data.csv', nrows = 0, header = TRUE)
+                cat(paste(names(data), collapse = ', '))
+            " 2>/dev/null)
+        else
+            column_names="File not available"
+        fi
         
+        echo "HTTP/1.1 200 OK"
+        echo "Content-Type: text/plain"
+        echo "Connection: close"
+        echo ""
         echo "$column_names"
         
     } | nc -l -p "$PORT" -q 1
