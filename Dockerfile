@@ -4,24 +4,22 @@ FROM r-base:4.3.2
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install system dependencies in a single layer with cache cleanup
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
     libgit2-dev \
     libssh2-1-dev \
-    libfontconfig1-dev \
-    libfreetype6-dev \
-    libfribidi-dev \
-    libharfbuzz-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libtiff5-dev \
-    && rm -rf /var/lib/apt/lists/*
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
-# Install required R packages
-RUN R -e "install.packages(c('plumber', 'data.table', 'jsonlite', 'httr', 'googleCloudStorageR'), repos='https://cran.rstudio.com/', dependencies=TRUE)"
+# Install R packages with specific versions to improve caching and reduce build time
+RUN R -e "options(repos = c(CRAN = 'https://cran.rstudio.com/')); \
+    install.packages(c('plumber', 'data.table', 'jsonlite', 'googleCloudStorageR'), \
+    dependencies = c('Depends', 'Imports'), \
+    Ncpus = parallel::detectCores())"
 
 # Create credentials directory
 RUN mkdir -p /app/credentials

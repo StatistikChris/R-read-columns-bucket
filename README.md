@@ -79,12 +79,18 @@ In case of error:
 
 ### Build and Run
 
-1. **Build the Docker image:**
+1. **Build the Docker image (recommended method):**
+   ```bash
+   # Use the provided build script for better error handling
+   ./build.sh
+   ```
+
+2. **Or build manually:**
    ```bash
    docker build -t r-csv-reader .
    ```
 
-2. **Run the container:**
+3. **Run the container:**
    ```bash
    # Option 1: Using service account key file
    docker run -p 8080:8080 \
@@ -95,7 +101,7 @@ In case of error:
    docker run -p 8080:8080 r-csv-reader
    ```
 
-3. **Test the API:**
+4. **Test the API:**
    ```bash
    curl "http://localhost:8080/columns?bucket=your-bucket&file_path=your-file.csv"
    ```
@@ -256,17 +262,27 @@ curl -X POST https://your-service-url/columns \
 
 ### Common Issues
 
-1. **Authentication errors:**
+1. **Build timeout errors ("context deadline exceeded"):**
+   - Use the provided `build.sh` script for local testing
+   - Increase Cloud Build timeout in `cloudbuild.yaml`
+   - Use a more powerful machine type (E2_HIGHCPU_8) for building
+   - Enable Docker BuildKit for faster builds: `export DOCKER_BUILDKIT=1`
+
+2. **Authentication errors:**
    - Ensure service account has proper permissions
    - Check that credentials are properly mounted in Docker
 
-2. **File not found:**
+3. **File not found:**
    - Verify bucket name and file path
    - Check that the service account can access the bucket
 
-3. **Memory issues:**
+4. **Memory issues:**
    - Large CSV files might require more memory
    - Increase Cloud Run memory allocation if needed
+
+5. **Slow CSV processing:**
+   - The app now uses efficient header-only reading
+   - For very large files, only the first 8KB is read to get column names
 
 ### Logs
 View logs in Cloud Run:
