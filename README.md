@@ -262,7 +262,13 @@ curl -X POST https://your-service-url/columns \
 
 ### Common Issues
 
-1. **Build timeout errors ("context deadline exceeded"):**
+1. **Package installation errors ("there is no package called 'plumber'"):**
+   - Check that all R packages installed correctly during build
+   - Use the debug script: `docker run --rm <image> Rscript debug.R`
+   - Rebuild with verbose output: `./build.sh` (includes package verification)
+   - Check Docker build logs for package installation failures
+
+2. **Build timeout errors ("context deadline exceeded"):**
    - Use the provided `build.sh` script for local testing
    - Increase Cloud Build timeout in `cloudbuild.yaml`
    - Use a more powerful machine type (E2_HIGHCPU_8) for building
@@ -284,10 +290,26 @@ curl -X POST https://your-service-url/columns \
    - The app now uses efficient header-only reading
    - For very large files, only the first 8KB is read to get column names
 
-### Logs
-View logs in Cloud Run:
+### Diagnostic Commands
+
+**Check R packages in container:**
+```bash
+# List all installed R packages
+docker run --rm <image-name> Rscript -e "installed.packages()[,c('Package', 'Version')]"
+
+# Run debug script
+docker run --rm <image-name> Rscript debug.R
+
+# Test package loading
+docker run --rm <image-name> Rscript -e "library(plumber); library(data.table); library(googleCloudStorageR)"
+```
+
+**View Cloud Run logs:**
 ```bash
 gcloud logs tail --follow --project=$PROJECT_ID
+
+# Filter for specific errors
+gcloud logs read --project=$PROJECT_ID --filter="resource.type=cloud_run_revision AND severity>=ERROR"
 ```
 
 ## Architecture

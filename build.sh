@@ -42,6 +42,28 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "✅ Build completed successfully!"
     echo ""
+    echo "🧪 Testing package installation..."
+    
+    # Test that R packages are properly installed
+    docker run --rm "$IMAGE_NAME" Rscript -e "
+        packages <- c('plumber', 'data.table', 'googleCloudStorageR', 'jsonlite');
+        missing <- packages[!sapply(packages, requireNamespace, quietly = TRUE)];
+        if (length(missing) > 0) {
+            cat('❌ Missing packages:', paste(missing, collapse = ', '), '\n');
+            quit(status = 1);
+        } else {
+            cat('✅ All packages are properly installed\n');
+        }
+    "
+    
+    if [ $? -eq 0 ]; then
+        echo "✅ Package verification passed!"
+    else
+        echo "❌ Package verification failed!"
+        echo "   Some R packages may not be properly installed"
+    fi
+    
+    echo ""
     echo "📊 Image information:"
     docker images "$IMAGE_NAME" --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.CreatedAt}}"
     echo ""
@@ -55,6 +77,9 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "🔍 To run interactively for debugging:"
     echo "   docker run -it --entrypoint /bin/bash $IMAGE_NAME"
+    echo ""
+    echo "🔍 To check R packages manually:"
+    echo "   docker run -it --entrypoint Rscript $IMAGE_NAME -e 'installed.packages()[,c(\"Package\", \"Version\")]'"
 else
     echo ""
     echo "❌ Build failed!"
@@ -64,5 +89,6 @@ else
     echo "   - Ensure you have enough disk space"
     echo "   - Try: docker system prune to free up space"
     echo "   - For timeout issues, increase Docker's resource limits"
+    echo "   - Check Docker logs: docker logs <container_id>"
     exit 1
 fi

@@ -11,15 +11,25 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxml2-dev \
     libgit2-dev \
     libssh2-1-dev \
+    libfontconfig1-dev \
+    libcairo2-dev \
+    libxt-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libv8-dev \
     ca-certificates \
+    build-essential \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Install R packages with specific versions to improve caching and reduce build time
-RUN R -e "options(repos = c(CRAN = 'https://cran.rstudio.com/')); \
-    install.packages(c('plumber', 'data.table', 'jsonlite', 'googleCloudStorageR'), \
-    dependencies = c('Depends', 'Imports'), \
-    Ncpus = parallel::detectCores())"
+# Copy package installation script
+COPY install_packages.R /tmp/install_packages.R
+
+# Install R packages using the dedicated script
+RUN Rscript /tmp/install_packages.R && rm /tmp/install_packages.R
 
 # Create credentials directory
 RUN mkdir -p /app/credentials
@@ -29,6 +39,10 @@ COPY *.R /app/
 
 # Make R scripts executable
 RUN chmod +x /app/*.R
+
+# Run debug script to verify installation
+RUN echo "=== Running post-install verification ===" && \
+    Rscript /app/debug.R
 
 # Expose the port that the app runs on
 EXPOSE 8080
