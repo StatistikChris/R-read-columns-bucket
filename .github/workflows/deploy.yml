@@ -8,7 +8,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  SERVICE_NAME: csv-column-reader
+  SERVICE_NAME: file-downloader
   REGION: us-central1
   REPOSITORY: r-apps
 
