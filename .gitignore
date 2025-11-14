@@ -1,0 +1,25 @@
+# Logs
+*.log
+
+# R session data
+.RData
+.Rhistory
+
+# IDE files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# Google Cloud credentials (should not be committed)
+credentials/
+service-account-key.json
+
+# Temporary files
+*.tmp

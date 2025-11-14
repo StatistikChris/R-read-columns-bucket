@@ -1,0 +1,21 @@
+# Ignore development files
+.git
+.gitignore
+README.md
+.DS_Store
+.env
+*.log
+
+# Ignore local testing files
+test/
+tests/
+examples/
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore OS generated files
+Thumbs.db
