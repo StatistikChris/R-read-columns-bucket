@@ -12,17 +12,13 @@ library(data.table)
 csv_file <- "/app/downloads/sample_data.csv"
 
 # Read the CSV file using data.table
-tryCatch({
-    # Read just the first few rows to get column names efficiently using fread
-    data <- fread(csv_file, nrows = 1, header = TRUE)
+
+# Read just the first few rows to get column names efficiently using fread
+data <- fread(csv_file, nrows = 1, header = TRUE)
     
-    # Get column names
-    cat(names(data), sep = "\n")
+# Get column names
+cat(names(data), sep = "\n")
 
     
-}, error = function(e) {
-    cat("Error reading CSV file with data.table:", e$message, "\n")
-    quit(status = 1)
-})
 
 cat("\nR script completed successfully using data.table!\n")
