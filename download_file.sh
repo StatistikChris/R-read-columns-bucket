@@ -38,6 +38,15 @@ if [ -f "$LOCAL_PATH" ]; then
     # Show first few lines if it's a text file
     echo "First few lines of the file:"
     head -5 "$LOCAL_PATH" 2>/dev/null || echo "Could not read file contents (might be binary)"
+    
+    # Run R analysis to get column names
+    echo ""
+    echo "=== RUNNING R ANALYSIS ==="
+    if command -v Rscript >/dev/null 2>&1; then
+        Rscript /app/analyze_csv.R
+    else
+        echo "R not available - skipping column analysis"
+    fi
 else
     echo "Error: Download failed - file not found at $LOCAL_PATH"
     exit 1

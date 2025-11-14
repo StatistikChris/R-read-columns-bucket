@@ -5,15 +5,18 @@ This Docker image downloads a CSV file from Google Cloud Storage via HTTPS and s
 ## Features
 
 - Downloads file from public GCS URL using curl (no authentication required)
-- Serves a web interface showing download status and file information
+- **R column analysis** - automatically analyzes CSV column names using R
+- Serves a web interface showing download status, file information, and R analysis
 - Optimized for Google Cloud Run deployment
 - Automatic deployment via GitHub Actions
 
 ## Files
 
-- `Dockerfile`: Lightweight Alpine-based image with curl, bash, and netcat
-- `download_file.sh`: Bash script that downloads the file via HTTPS
+- `Dockerfile`: Lightweight Alpine-based image with curl, bash, netcat, and R
+- `download_file.sh`: Bash script that downloads the file via HTTPS and runs R analysis
 - `server.sh`: Pure bash HTTP server for Cloud Run
+- `analyze_csv.R`: R script that reads CSV and prints column names
+- `run_r_analysis.sh`: Standalone script to run R analysis
 - `cloud-run-service.yaml`: Cloud Run service configuration
 - `.github/workflows/deploy.yml`: GitHub Actions deployment workflow
 
@@ -65,8 +68,17 @@ gcloud run deploy file-downloader \
 
 Once deployed, the service provides:
 
-- **GET /** - Web interface showing file download status and preview
+- **GET /** - Web interface showing file download status, R column analysis, and file preview
 - **GET /health** - JSON health check endpoint
+
+## R Analysis Features
+
+The service automatically runs R analysis on the downloaded CSV file to:
+
+- Extract and display column names
+- Count the number of columns  
+- Show column names as an R vector format
+- Display results both in the web interface and console logs
 
 ## Requirements
 

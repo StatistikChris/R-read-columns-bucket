@@ -29,6 +29,12 @@ create_response() {
         preview=$(head -10 "$file_path" 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "Could not read file")
     fi
     
+    # Get R analysis results if available
+    local r_analysis=""
+    if command -v Rscript >/dev/null 2>&1 && [ -f "$file_path" ]; then
+        r_analysis=$(Rscript /app/analyze_csv.R 2>/dev/null | sed 's/</\&lt;/g; s/>/\&gt;/g' || echo "R analysis failed")
+    fi
+    
     cat << EOF
 HTTP/1.1 200 OK
 Content-Type: text/html
@@ -63,6 +69,11 @@ Connection: close
                 <li><strong>File Size:</strong> $file_size bytes</li>
                 <li><strong>Current Time:</strong> $(date)</li>
             </ul>
+        </div>
+        
+        <div class="info">
+            <h3>R Column Analysis:</h3>
+            <pre>$r_analysis</pre>
         </div>
         
         <div class="info">
